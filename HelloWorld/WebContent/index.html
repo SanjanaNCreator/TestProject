@@ -10,13 +10,55 @@
 	
     <meta name="description" content="CAA Web Apps basic use case  Drag and Drop - Drop part" />
     <meta name="keywords" content="CAA Use Case" />
+	
+	 <link rel="stylesheet" type="text/css" href="http://uwa.netvibes.com/lib/c/UWA/assets/css/standalone.css" />
+	<link rel="stylesheet" type="text/css" href="../../common/styles/emxUIStructureBrowser.css" />
+	<link rel="stylesheet" type="text/css" href="../UWA2/assets/css/base/base/controls/datagrid.css" />
    	
 	<!-- Application Metas End -->
+	<style>
+
+	form {
+	  width: 100 % ;
+	  height: 100 % ;
+	}
+	.container {
+	  border-radius: 5px;
+	  background-color: #f2f2f2;
+	  padding: 20px;
+	}
 	
+	input[type=text],   {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  resize: vertical;
+}
+
+input[type=button] {
+  background-color: Gray;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.myLblType {
+  padding: 8px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+	</style>
 	
 	<!-- Application JS Start -->
     <script >   
             /* global widget,require */	
+			define(['DS/WAFData/WAFData'],
+			function (WAFData) {
 			require(['DS/DataDragAndDrop/DataDragAndDrop'] , 
 			    function (DataDragAndDrop) {
 				'use strict';
@@ -25,23 +67,77 @@
 						
 					//onLoad: event triggered when the widget is launched  
 					//--------------------------------------------------
-					  onLoad: function() {				            
-            var html_before_drop = "&lt;p class='myDropEltClass'&gt;Drop Here&lt;/p&gt;";
-            widget.body.innerHTML=html_before_drop ;
-            var theDropElt = widget.body.querySelector('.myDropEltClass');
-            
-            DataDragAndDrop.droppable( theDropElt , {  
-                drop : function(data) {							    
-                    var text_to_add_after_drop = "The dropped data: " + data ; 
-                    <b>widget.body.innerHTML = "&lt;p class='myDropEltClass'&gt;" + text_to_add_after_drop + "&lt;/p&gt;"; </b>
-                } 
-            }) ;	
-        }
+					onLoad: function() {
+
+							var html = 	"<div class='container'>"+					
+									
+						            "<h1 class='heading' >Drag Structure to Assign Number</h1><br><br>"   +
+						            "<label class='myLblType' >Drop in the editor:</label>"  +
+									"<input class='myInputType' type='text' /><br><br>" + 
+									"<label class='myLblType' >Drop Status:</label>"  +
+									"<input class='myStatusDrop' type='text' /><br><br><br><br>" + 
+									
+								//	"<input type='button' class='ranNum' value='Assign Number'>" + "<br>" +"<br>"+
+								
+									"<button class='assignBtn'>Assign Number</button>" +  "<br>" +"<br>" +
+									"<label>RN: </label>" +
+									"<label class='RNResultLbl'></label>" +
+									
+									
+									"</div>";
+									
+						
+						
+						widget.body.innerHTML=html ;
+						
+						var theInput = widget.body.querySelector('.myInputType');
+						var theStatus = widget.body.querySelector('.myStatusDrop');
+						var button = widget.body.querySelector('.assignBtn');
+						button.addEventListener("click", function() { 
+						alert("called");
+						 var pathWS= "https://frosty-darwin-dd66f2.netlify.app/" ;
+						 alert("called2");
+		                 WAFData.proxifiedRequest(pathWS, {
+							method:'GET',
+							onComplete: function(responseAsString) {
+								var resp = responseAsString;
+								 var labelResult=options.container.querySelector('.RNResultLbl');
+									labelResult.innerHTML= resp ;
+							}
+						});
+						 alert("outside");
+						 
+						 //
+						 
+						 
+						 
+						 //
+						 
+						});
+						DataDragAndDrop.droppable( theInput , {  
+							drop : function(data) {							    
+								theInput.value = data ;
+								theStatus.value = 'drop' ;
+							},
+							enter: function() {	
+								theStatus.value = 'enter' ;
+							},
+							over: function() {	
+								theStatus.value = 'over' ;
+							}, 
+							leave: function() {
+								theStatus.value = 'leave' ;
+							}
+						}) ;
+						
+							
+					}
 					
 				};
      			//
                 //---------				
 				widget.addEvent('onLoad',  myWidget.onLoad);
+		});
 		});
     </script>
 	<!-- Application JS End -->
